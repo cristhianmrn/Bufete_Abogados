@@ -67,32 +67,59 @@
             </div>
         </nav>
 
-        <!-- Hero Section -->
-        <section class="hero-section bg-gray-900 bg-opacity-70 text-white py-24">
-            <div class="content-overlay max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center" data-aos="fade-up">
-                    <h1 class="text-4xl md:text-6xl font-bold mb-6">Excelencia Legal <span class="text-yellow-500">G & R</span></h1>
-                    <p class="text-xl md:text-2xl max-w-3xl mx-auto mb-8">Protegiendo sus derechos con experiencia, integridad y dedicación.</p>
-                    <div class="flex justify-center space-x-4">
-                        <a href="#contact" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105">
-                            Consulta 
-                        </a>
-                        <a href="#services" class="bg-transparent hover:bg-white hover:bg-opacity-10 border-2 border-white text-white font-bold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105">
-                            Nuestros Servicios
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
+   <!-- Hero Section Mejorado -->
+<section id="inicio" class="relative h-screen flex items-center justify-center text-center text-white overflow-hidden">
+    <!-- Fondo animado Vanta.js -->
+    <div id="vanta-hero" class="absolute inset-0"></div>
 
-        <!-- Services Section -->
-        <section id="services" class="py-20 bg-white bg-opacity-90 backdrop-filter backdrop-blur-sm">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-16" data-aos="fade-up">
-                    <h2 class="text-3xl font-bold text-gray-800 mb-4">Nuestras Áreas de Práctica</h2>
-                    <div class="gold-divider w-24 mx-auto my-4"></div>
-                    <p class="text-gray-600 max-w-2xl mx-auto">Ofrecemos soluciones legales integrales adaptadas a sus necesidades específicas.</p>
-                </div>
+    <!-- Capa de color degradado -->
+    <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-gray-900/70 to-black/80"></div>
+
+    <!-- Contenido -->
+    <div class="relative z-10 px-6 max-w-4xl" data-aos="fade-up">
+        <h1 class="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight leading-tight">
+            Excelencia Legal <span class="text-yellow-500">G & R</span>
+        </h1>
+        <p class="text-lg md:text-2xl text-gray-200 mb-10 max-w-2xl mx-auto">
+            Protegemos sus derechos con <span class="text-yellow-400 font-semibold">experiencia</span>,
+            <span class="text-yellow-400 font-semibold">integridad</span> y
+            <span class="text-yellow-400 font-semibold">dedicación</span>.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="#contact" class="bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition-transform duration-300 hover:scale-105">
+                Solicitar Consulta
+            </a>
+            <a href="#services" class="border-2 border-yellow-500 text-yellow-500 hover:bg-yellow-600 hover:text-white font-semibold py-3 px-8 rounded-lg transition-transform duration-300 hover:scale-105">
+                Conocer Servicios
+            </a>
+        </div>
+    </div>
+
+    <!-- Indicador scroll -->
+    <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce text-yellow-500">
+        <i data-feather="chevron-down" class="w-8 h-8"></i>
+    </div>
+</section>
+
+<!-- Script del fondo Vanta animado -->
+<script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.waves.min.js"></script>
+<script>
+    VANTA.WAVES({
+        el: "#vanta-hero",
+        mouseControls: true,
+        touchControls: true,
+        minHeight: 200.00,
+        minWidth: 200.00,
+        scale: 1.00,
+        scaleMobile: 1.00,
+        color: 0xD4AF37,
+        shininess: 40.00,
+        waveHeight: 20.00,
+        waveSpeed: 1.00,
+        zoom: 0.9,
+        backgroundColor: 0x111827
+    });
+</script>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <!-- Service 1 -->
@@ -567,3 +594,4 @@
 </body>
 
 </html>
+
