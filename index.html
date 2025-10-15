@@ -9,6 +9,8 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
     <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .hero-section {
             position: relative;
@@ -31,11 +33,75 @@
         .law-icon {
             filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.5));
         }
+        .floating-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 99;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .service-card:hover .service-icon {
+            transform: rotateY(180deg);
+        }
+        .service-icon {
+            transition: transform 0.6s;
+        }
+        .calendar-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
     </style>
 </head>
 <body class="bg-gray-50">
     <!-- Vanta.js Background -->
     <div id="vanta-bg" class="fixed top-0 left-0 w-full h-full z-0"></div>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/573156956652" class="floating-button bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-xl hover:bg-green-600 transition duration-300">
+        <i class="fab fa-whatsapp text-2xl"></i>
+    </a>
+
+    <!-- Appointment Modal -->
+    <div id="appointmentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-md w-full p-6 relative">
+            <button id="closeModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                <i data-feather="x"></i>
+            </button>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Programar Consulta</h3>
+            <form id="appointmentForm">
+                <div class="mb-4">
+                    <label for="appointmentName" class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                    <input type="text" id="appointmentName" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                </div>
+                <div class="mb-4">
+                    <label for="appointmentPhone" class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+                    <input type="tel" id="appointmentPhone" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                </div>
+                <div class="mb-4">
+                    <label for="appointmentDate" class="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
+                    <input type="date" id="appointmentDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                </div>
+                <div class="mb-4">
+                    <label for="appointmentService" class="block text-sm font-medium text-gray-700 mb-1">Servicio</label>
+                    <select id="appointmentService" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500">
+                        <option value="laboral">Derecho Laboral</option>
+                        <option value="penal">Derecho Penal</option>
+                        <option value="familia">Derecho de Familia</option>
+                        <option value="civil">Derecho Civil</option>
+                        <option value="administrativo">Derecho Administrativo</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-md transition duration-300">
+                    Programar Consulta
+                </button>
+            </form>
+        </div>
+    </div>
 
     <div class="relative z-10">
         <!-- Navigation -->
@@ -56,6 +122,9 @@
                             <a href="#about" class="text-gray-800 hover:text-yellow-600 px-3 py-2 text-sm font-medium">Nosotros</a>
                             <a href="#team" class="text-gray-800 hover:text-yellow-600 px-3 py-2 text-sm font-medium">Equipo</a>
                             <a href="#contact" class="text-gray-800 hover:text-yellow-600 px-3 py-2 text-sm font-medium">Contacto</a>
+                            <button id="openModalBtn" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
+                                Consulta Rápida
+                            </button>
                         </div>
                     </div>
                     <div class="md:hidden">
@@ -85,6 +154,8 @@
             </div>
         </section>
 
+        
+
         <!-- Services Section -->
         <section id="services" class="py-20 bg-white bg-opacity-90 backdrop-filter backdrop-blur-sm">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -100,11 +171,25 @@
                         <div class="p-6">
                             <div class="flex items-center mb-4">
                                 <div class="bg-yellow-100 p-3 rounded-full mr-4">
-                                    <i data-feather="briefcase" class="text-yellow-600 law-icon h-6 w-6"></i>
+                                    <i data-feather="briefcase" class="text-yellow-600 service-icon h-6 w-6"></i>
                                 </div>
                                 <h3 class="text-xl font-bold text-gray-800">Derecho Laboral</h3>
                             </div>
-                            <p class="text-gray-600"></p>
+                            <p class="text-gray-600">Asesoría en despidos, contratación, liquidaciones y conflictos laborales. Defensa de derechos del trabajador y asesoría empresarial.</p>
+                            <ul class="mt-4 space-y-2 text-gray-600 text-sm">
+                                <li class="flex items-start">
+                                    <i data-feather="check" class="text-yellow-600 mr-2 w-4 h-4 flex-shrink-0"></i>
+                                    <span>Despidos injustificados</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-feather="check" class="text-yellow-600 mr-2 w-4 h-4 flex-shrink-0"></i>
+                                    <span>Reclamos laborales</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-feather="check" class="text-yellow-600 mr-2 w-4 h-4 flex-shrink-0"></i>
+                                    <span>Acuerdos y convenios</span>
+                                </li>
+                            </ul>
                             <a href="#" class="mt-4 inline-flex items-center text-yellow-600 hover:text-yellow-700 font-medium">
                                 Saber más
                                 <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i>
@@ -117,11 +202,25 @@
                         <div class="p-6">
                             <div class="flex items-center mb-4">
                                 <div class="bg-yellow-100 p-3 rounded-full mr-4">
-                                    <i data-feather="home" class="text-yellow-600 law-icon h-6 w-6"></i>
+                                    <i data-feather="home" class="text-yellow-600 service-icon h-6 w-6"></i>
                                 </div>
                                 <h3 class="text-xl font-bold text-gray-800">Derecho Peninteciario y carcelario</h3>
                             </div>
-                            <p class="text-gray-600"></p>
+                            <p class="text-gray-600">Defensa en procesos penales, recursos de apelación, libertad condicional y beneficios penitenciarios. Asesoría para familiares.</p>
+                            <ul class="mt-4 space-y-2 text-gray-600 text-sm">
+                                <li class="flex items-start">
+                                    <i data-feather="check" class="text-yellow-600 mr-2 w-4 h-4 flex-shrink-0"></i>
+                                    <span>Defensa penal integral</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-feather="check" class="text-yellow-600 mr-2 w-4 h-4 flex-shrink-0"></i>
+                                    <span>Recursos y apelaciones</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-feather="check" class="text-yellow-600 mr-2 w-4 h-4 flex-shrink-0"></i>
+                                    <span>Beneficios penitenciarios</span>
+                                </li>
+                            </ul>
                             <a href="#" class="mt-4 inline-flex items-center text-yellow-600 hover:text-yellow-700 font-medium">
                                 Saber más
                                 <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i>
@@ -134,11 +233,25 @@
                         <div class="p-6">
                             <div class="flex items-center mb-4">
                                 <div class="bg-yellow-100 p-3 rounded-full mr-4">
-                                    <i data-feather="users" class="text-yellow-600 law-icon h-6 w-6"></i>
+                                    <i data-feather="users" class="text-yellow-600 service-icon h-6 w-6"></i>
                                 </div>
                                 <h3 class="text-xl font-bold text-gray-800">Derecho administrativo</h3>
                             </div>
-                            <p class="text-gray-600"></p>
+                            <p class="text-gray-600">Representación ante entidades públicas, recursos administrativos, procedimientos sancionatorios y contratación estatal.</p>
+                            <ul class="mt-4 space-y-2 text-gray-600 text-sm">
+                                <li class="flex items-start">
+                                    <i data-feather="check" class="text-yellow-600 mr-2 w-4 h-4 flex-shrink-0"></i>
+                                    <span>Recursos administrativos</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-feather="check" class="text-yellow-600 mr-2 w-4 h-4 flex-shrink-0"></i>
+                                    <span>Procesos disciplinarios</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-feather="check" class="text-yellow-600 mr-2 w-4 h-4 flex-shrink-0"></i>
+                                    <span>Contratación estatal</span>
+                                </li>
+                            </ul>
                             <a href="#" class="mt-4 inline-flex items-center text-yellow-600 hover:text-yellow-700 font-medium">
                                 Saber más
                                 <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i>
@@ -151,11 +264,25 @@
                         <div class="p-6">
                             <div class="flex items-center mb-4">
                                 <div class="bg-yellow-100 p-3 rounded-full mr-4">
-                                    <i data-feather="dollar-sign" class="text-yellow-600 law-icon h-6 w-6"></i>
+                                    <i data-feather="dollar-sign" class="text-yellow-600 service-icon h-6 w-6"></i>
                                 </div>
                                 <h3 class="text-xl font-bold text-gray-800">Derecho de familia</h3>
                             </div>
-                            <p class="text-gray-600"></p>
+                            <p class="text-gray-600">Divorcios, custodia, alimentos, sucesiones y uniones maritales. Soluciones integrales para conflictos familiares.</p>
+                            <ul class="mt-4 space-y-2 text-gray-600 text-sm">
+                                <li class="flex items-start">
+                                    <i data-feather="check" class="text-yellow-600 mr-2 w-4 h-4 flex-shrink-0"></i>
+                                    <span>Divorcios y separaciones</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-feather="check" class="text-yellow-600 mr-2 w-4 h-4 flex-shrink-0"></i>
+                                    <span>Pensión alimenticia</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-feather="check" class="text-yellow-600 mr-2 w-4 h-4 flex-shrink-0"></i>
+                                    <span>Patria potestad y custodia</span>
+                                </li>
+                            </ul>
                             <a href="#" class="mt-4 inline-flex items-center text-yellow-600 hover:text-yellow-700 font-medium">
                                 Saber más
                                 <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i>
@@ -168,11 +295,25 @@
                         <div class="p-6">
                             <div class="flex items-center mb-4">
                                 <div class="bg-yellow-100 p-3 rounded-full mr-4">
-                                    <i data-feather="shield" class="text-yellow-600 law-icon h-6 w-6"></i>
+                                    <i data-feather="shield" class="text-yellow-600 service-icon h-6 w-6"></i>
                                 </div>
                                 <h3 class="text-xl font-bold text-gray-800">Derecho civil</h3>
                             </div>
-                            <p class="text-gray-600"></p>
+                            <p class="text-gray-600">Contratos, daños y perjuicios, responsabilidad civil, propiedad y problemas vecinales. Defensa de derechos civiles.</p>
+                            <ul class="mt-4 space-y-2 text-gray-600 text-sm">
+                                <li class="flex items-start">
+                                    <i data-feather="check" class="text-yellow-600 mr-2 w-4 h-4 flex-shrink-0"></i>
+                                    <span>Reclamos por daños</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-feather="check" class="text-yellow-600 mr-2 w-4 h-4 flex-shrink-0"></i>
+                                    <span>Contratos y obligaciones</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-feather="check" class="text-yellow-600 mr-2 w-4 h-4 flex-shrink-0"></i>
+                                    <span>Propiedad y posesión</span>
+                                </li>
+                            </ul>
                             <a href="#" class="mt-4 inline-flex items-center text-yellow-600 hover:text-yellow-700 font-medium">
                                 Saber más
                                 <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i>
@@ -185,11 +326,25 @@
                         <div class="p-6">
                             <div class="flex items-center mb-4">
                                 <div class="bg-yellow-100 p-3 rounded-full mr-4">
-                                    <i data-feather="globe" class="text-yellow-600 law-icon h-6 w-6"></i>
+                                    <i data-feather="globe" class="text-yellow-600 service-icon h-6 w-6"></i>
                                 </div>
                                 <h3 class="text-xl font-bold text-gray-800">Derecho penal</h3>
                             </div>
-                            <p class="text-gray-600"></p>
+                            <p class="text-gray-600">Defensa en procesos penales, recursos, libertad condicional y beneficios penitenciarios. Asesoría para familiares.</p>
+                            <ul class="mt-4 space-y-2 text-gray-600 text-sm">
+                                <li class="flex items-start">
+                                    <i data-feather="check" class="text-yellow-600 mr-2 w-4 h-4 flex-shrink-0"></i>
+                                    <span>Defensa penal integral</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-feather="check" class="text-yellow-600 mr-2 w-4 h-4 flex-shrink-0"></i>
+                                    <span>Recursos y apelaciones</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <i data-feather="check" class="text-yellow-600 mr-2 w-4 h-4 flex-shrink-0"></i>
+                                    <span>Medidas cautelares</span>
+                                </li>
+                            </ul>
                             <a href="#" class="mt-4 inline-flex items-center text-yellow-600 hover:text-yellow-700 font-medium">
                                 Saber más
                                 <i data-feather="arrow-right" class="ml-2 w-4 h-4"></i>
@@ -256,7 +411,6 @@
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    
                     <!-- Team Member 2 -->
                     <div class="bg-white rounded-xl shadow-lg overflow-hidden scale-hover" data-aos="fade-up" data-aos-delay="200">
                         <img src="Captura de pantalla 2025-08-26 161752.png" alt="Abogada carmelina guainas" class="w-full h-64 object-cover">
@@ -355,7 +509,24 @@
                         </div>
                     </div>
                     
-
+                    <!-- Testimonial 3 -->
+                    <div class="bg-white p-8 rounded-xl shadow-lg scale-hover" data-aos="fade-up" data-aos-delay="300">
+                        <div class="flex items-center mb-4">
+                            <div class="text-yellow-500 mr-2">
+                                <i data-feather="star" class="w-4 h-4 fill-current"></i>
+                                <i data-feather="star" class="w-4 h-4 fill-current"></i>
+                                <i data-feather="star" class="w-4 h-4 fill-current"></i>
+                                <i data-feather="star" class="w-4 h-4 fill-current"></i>
+                                <i data-feather="star" class="w-4 h-4 fill-current"></i>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 italic mb-6">"Excelente servicio en mi proceso de divorcio. Me guiaron en cada paso con empatía y profesionalismo, logrando un resultado favorable."</p>
+                        <div class="flex items-center">
+                            <img src="http://static.photos/people/120x120/3" alt="Cliente Satisfecho" class="w-12 h-12 rounded-full mr-4 object-cover">
+                            <div>
+                                <h4 class="font-bold text-gray-800">Ana Martínez</h4>
+                                <p class="text-sm text-gray-500">Cliente Satisfecho</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -435,13 +606,11 @@
                                 <label for="service" class="block text-sm font-medium text-gray-300 mb-2">Área de Interés</label>
                                 <select id="service" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent text-white placeholder-gray-400">
                                     <option value="" disabled selected>Seleccione un servicio</option>
-                                    <option value="corporate">Derecho Corporativo</option>
-                                    <option value="realstate">Derecho Inmobiliario</option>
-                                    <option value="family">Derecho Familiar</option>
-                                    <option value="financial">Derecho Financiero</option>
+                                    <option value="corporate">Derecho Laboral</option>
                                     <option value="penal">Derecho Penal</option>
-                                    <option value="international">Derecho Internacional</option>
-                                    <option value="other">Otro</option>
+                                    <option value="family">Derecho de Familia</option>
+                                    <option value="civil">Derecho Civil</option>
+                                    <option value="administrative">Derecho Administrativo</option>
                                 </select>
                             </div>
                             
@@ -474,10 +643,10 @@
                     <div>
                         <h3 class="text-lg font-bold mb-4">Servicios</h3>
                         <ul class="space-y-2">
-                            <li><a href="#" class="text-gray-400 hover:text-yellow-500">Derecho Corporativo</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-yellow-500">Derecho Inmobiliario</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-yellow-500">Derecho Familiar</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-yellow-500">Derecho Laboral</a></li>
                             <li><a href="#" class="text-gray-400 hover:text-yellow-500">Derecho Penal</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-yellow-500">Derecho de Familia</a></li>
+                            <li><a href="#" class="text-gray-400 hover:text-yellow-500">Derecho Civil</a></li>
                         </ul>
                     </div>
                     
@@ -558,11 +727,41 @@
         // Initialize Feather Icons
         feather.replace();
 
-        // Mobile menu toggle
-        document.querySelector('.mobile-menu-button').addEventListener('click', function() {
-            // Implement mobile menu functionality here
-            alert('Menú móvil se abriría aquí en una implementación completa');
+        // Appointment Modal
+        const modal = document.getElementById('appointmentModal');
+        const openModalBtn = document.getElementById('openModalBtn');
+        const closeModalBtn = document.getElementById('closeModal');
+        const appointmentForm = document.getElementById('appointmentForm');
+
+        openModalBtn.addEventListener('click', () => {
+            modal.classList.remove('hidden');
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            modal.classList.add('hidden');
+        });
+
+        appointmentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            modal.classList.add('hidden');
+            Swal.fire({
+                icon: 'success',
+                title: 'Consulta Programada',
+                text: 'Nos pondremos en contacto contigo para confirmar la cita.',
+                confirmButtonColor: '#D4AF37'
+            });
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
         });
     </script>
 </body>
 </html>
+
